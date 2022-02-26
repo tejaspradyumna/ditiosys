@@ -27,6 +27,12 @@ function classNames(...classes) {
 }
 
 export default function Header() {
+
+    function logout() {
+        localStorage.removeItem('log')
+        window.location.href = "https://ditiosys.com"
+    }
+
     return (
         <>
             {/*
@@ -45,7 +51,7 @@ export default function Header() {
                                 <div className="flex items-center justify-between h-16">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
-                                        <h1 className="text-2xl font-bold">Ditio Sys</h1>
+                                            <h1 className="text-2xl font-bold">Ditio Sys</h1>
                                         </div>
                                         {/* <div className="hidden md:block">
                                             <div className="ml-10 flex items-baseline space-x-4">
@@ -95,21 +101,15 @@ export default function Header() {
                                                     leaveTo="transform opacity-0 scale-95"
                                                 >
                                                     <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                        {userNavigation.map((item) => (
-                                                            <Menu.Item key={item.name}>
-                                                                {({ active }) => (
-                                                                    <a
-                                                                        href={item.href}
-                                                                        className={classNames(
-                                                                            active ? 'bg-gray-100' : '',
-                                                                            'block px-4 py-2 text-sm text-gray-700'
-                                                                        )}
-                                                                    >
-                                                                        {item.name}
-                                                                    </a>
-                                                                )}
-                                                            </Menu.Item>
-                                                        ))}
+                                                        <Menu.Item onClick={() => logout()}>
+                                                            <button
+                                                                onClick={() => logout()}
+                                                                className={
+                                                                    'block px-4 py-2 text-sm text-gray-700 w-full'}
+                                                            >
+                                                                Sign Out
+                                                            </button>
+                                                        </Menu.Item>
                                                     </Menu.Items>
                                                 </Transition>
                                             </Menu>
@@ -155,25 +155,22 @@ export default function Header() {
                                             <div className="text-base font-medium leading-none text-white">{user.name}</div>
                                             <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
                                         </div>
-                                        <button
-                                            type="button"
-                                            className="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                                        >
-                                            <span className="sr-only">View notifications</span>
-                                            <BellIcon className="h-6 w-6" aria-hidden="true" />
-                                        </button>
                                     </div>
                                     <div className="mt-3 px-2 space-y-1">
-                                        {userNavigation.map((item) => (
-                                            <Disclosure.Button
-                                                key={item.name}
-                                                as="a"
-                                                href={item.href}
-                                                className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                                            >
-                                                {item.name}
-                                            </Disclosure.Button>
-                                        ))}
+                                        {/* <Disclosure.Button
+                                            as="a"
+                                            href={item.href}
+                                            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                                        >
+                                            {item.name}
+                                        </Disclosure.Button> */}
+                                        <Disclosure.Button
+                                            onClick={() => logout()}
+                                            as="button"
+                                            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                                        >
+                                            Sign Out
+                                        </Disclosure.Button>
                                     </div>
                                 </div>
                             </Disclosure.Panel>
