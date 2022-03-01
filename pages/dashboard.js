@@ -14,11 +14,19 @@ export default function Dashboard() {
     const [webcam, setWebcam] = useState("")
     const [role, setRole] = useState("")
     const [loginStatus, setLoginStatus] = useState(false)
+    const [breaks, setBreaks] = useState(false)
+
+    const [onboarding, setOnboarding] = useState(0)
+    const [proctoring, setProctoring] = useState(0)
+    const [calls, setCalls] = useState(0)
+    const [chats, setChats] = useState(0)
+    const [tech, setTech] = useState(0)
+    const [other, setOther] = useState("")
 
     useEffect(() => {
         const log = localStorage.getItem('log')
         if (!log) {
-            window.location.href = "https://ditiosys.com/eplogin"
+            window.location.href = "https://ditiosys.com/"
         }
     })
 
@@ -43,6 +51,9 @@ export default function Dashboard() {
         console.log(data.records[0])
         if (data.records[0].status == "ACTIVE") {
             setLoginStatus(true)
+        } else if (data.records[0].status == "INBREAK") {
+            setLoginStatus(true)
+            setBreaks(true)
         } else {
             setLoginStatus(false)
         }
@@ -99,7 +110,7 @@ export default function Dashboard() {
                 getEmployeeStatus()
             }
         } else {
-            window.location.href = "https://ditiosys.com/eplogin"
+            window.location.href = "https://ditiosys.com/"
         }
     }
 
@@ -110,10 +121,19 @@ export default function Dashboard() {
             const ipdata = await ipres.json()
             const logOutIP = ipdata.IPv4
 
+            const eod = {
+                onboarding,
+                proctoring,
+                calls,
+                chats,
+                tech,
+                other
+            }
+
             const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLogoutEmployeeStatus`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ webcam, logOutIP, log })
+                body: JSON.stringify({ webcam, logOutIP, log, eod })
             })
             const data = await res.json()
             console.log(data)
@@ -126,7 +146,34 @@ export default function Dashboard() {
                 window.location.href = "https://ditiosys.com"
             }
         } else {
-            window.location.href = "https://ditiosys.com/eplogin"
+            window.location.href = "https://ditiosys.com/"
+        }
+    }
+
+    async function startBreak() {
+        const log = localStorage.getItem('log')
+        if (log) {
+            if (breaks) {
+                setBreaks(false)
+                const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateEndBreak`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ log })
+                })
+                const data = await res.json()
+            } else {
+                setBreaks(true)
+                const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateStartBreak`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ log })
+                })
+                const data = await res.json()
+            }
         }
     }
 
@@ -136,7 +183,8 @@ export default function Dashboard() {
                 <Header />
                 <div className="bg-white max-w-[96%] mx-auto shadow-xl rounded-2xl mt-2">
                     {loginStatus ? <>
-                        <button onClick={() => setIsOpen2(true)} className="m-5 inline-flex justify-center px-4 py-2 text-sm font-medium text-orange-900 bg-orange-100  border border-transparent rounded-md hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500">Logout</button>
+                        <button onClick={() => setIsOpen2(true)} className={`${breaks ? 'hidden' : null} m-5 inline-flex justify-center px-4 py-2 text-sm font-medium text-orange-900 bg-orange-100  border border-transparent rounded-md hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500`}>Logout</button>
+                        <button onClick={() => startBreak()} className="m-5 inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100  border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">{breaks ? <>End Break</> : <>Start Break</>}</button>
                     </> : <>
                         <button onClick={() => setIsOpen(true)} className="m-5 inline-flex justify-center px-4 py-2 text-sm font-medium text-orange-900 bg-orange-100  border border-transparent rounded-md hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500">Login</button>
                     </>}
@@ -302,7 +350,12 @@ export default function Dashboard() {
                                             />
                                             <img src={webcam} id="image" className="h-[300px] w-[400px] rounded-md hidden" />
                                         </div>
-                                        {/* <input onChange={(e) => setRole(e.target.value)} type="text" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" /> */}
+                                        <input onChange={(e) => setOnboarding(e.target.value)} placeholder="No of Onboarding" min="0" type="number" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
+                                        <input onChange={(e) => setProctoring(e.target.value)} placeholder="No of Proctoring" min="0" type="number" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
+                                        <input onChange={(e) => setCalls(e.target.value)} placeholder="No of Calls" min="0" type="number" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
+                                        <input onChange={(e) => setChats(e.target.value)} placeholder="No of Chats" type="number" min="0" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
+                                        <input onChange={(e) => setTech(e.target.value)} placeholder="No of Tech" type="number" min="0" className="border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
+                                        <textarea rows="5" onChange={(e) => setOther(e.target.value)} placeholder="Anything Else Other than the above mentioned Role." type="text" className="resize-none border my-2 w-full rounded-md px-4 py-2 focus:outline-none focus:border-orange-500" />
                                     </div>
 
                                     <div className="mt-2">

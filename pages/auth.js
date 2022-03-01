@@ -26,8 +26,11 @@ export default function Auth() {
             if (data.message === "Success") {
                 localStorage.setItem('log', data.token)
                 router.push('/dashboard')
+            } else if (data.message === "Admin login Success") {
+                localStorage.setItem('log', data.token)
+                router.push('/adashboard')
             } else {
-                window.location.href = "https://ditiosys.com/eplogin"
+                window.location.href = "https://ditiosys.com/"
             }
         }
         if (id !== undefined || password !== undefined) {
