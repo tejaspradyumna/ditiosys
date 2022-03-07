@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import { Dialog, Transition } from '@headlessui/react'
 import { XCircleIcon } from '@heroicons/react/outline'
 import Webcam from "react-webcam";
+import * as toastr from 'toastr'
 
 import * as credentials from '/config'
 import { Router } from 'next/router';
@@ -15,6 +16,8 @@ export default function Dashboard() {
     const [role, setRole] = useState("")
     const [loginStatus, setLoginStatus] = useState(false)
     const [breaks, setBreaks] = useState(false)
+    const [showToastr, setShowToastr] = useState(false)
+    const [showToastr2, setShowToastr2] = useState(false)
 
     const [onboarding, setOnboarding] = useState(0)
     const [proctoring, setProctoring] = useState(0)
@@ -90,24 +93,31 @@ export default function Dashboard() {
 
     async function updateLoginStatus() {
         const log = localStorage.getItem('log')
+        setShowToastr(false)
         if (log) {
             const ipres = await fetch('https://geolocation-db.com/json/')
             const ipdata = await ipres.json()
             const logInIP = ipdata.IPv4
-            const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLoginEmployeeStatus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ webcam, role, log, logInIP })
-            })
-            const data = await res.json()
-            console.log(data)
-            if (data.message == "Updated") {
-                setWebcam("")
-                setIsOpen(false)
-                setRole("")
-                getEmployeeStatus()
+            if (logInIP === '106.51.80.197' || logInIP === '223.233.82.214') {
+                console.log(true)
+                const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLoginEmployeeStatus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ webcam, role, log, logInIP })
+                })
+                const data = await res.json()
+                console.log(data)
+                if (data.message == "Updated") {
+                    setWebcam("")
+                    setIsOpen(false)
+                    setRole("")
+                    getEmployeeStatus()
+                }
+            } else {
+                console.log(false)
+                setShowToastr(true)
             }
         } else {
             window.location.href = "https://ditiosys.com/"
@@ -121,29 +131,34 @@ export default function Dashboard() {
             const ipdata = await ipres.json()
             const logOutIP = ipdata.IPv4
 
-            const eod = {
-                onboarding,
-                proctoring,
-                calls,
-                chats,
-                tech,
-                other
-            }
+            if (logOutIP === '106.51.80.197' || logOutIP === '223.233.82.214') {
+                const eod = {
+                    onboarding,
+                    proctoring,
+                    calls,
+                    chats,
+                    tech,
+                    other
+                }
 
-            const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLogoutEmployeeStatus`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ webcam, logOutIP, log, eod })
-            })
-            const data = await res.json()
-            console.log(data)
-            if (data.message === "Updated") {
-                setWebcam("")
-                setIsOpen2(false)
-                setRole("")
-                getEmployeeStatus()
-                localStorage.removeItem('log')
-                window.location.href = "https://ditiosys.com"
+                const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLogoutEmployeeStatus`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ webcam, logOutIP, log, eod })
+                })
+                const data = await res.json()
+                console.log(data)
+                if (data.message === "Updated") {
+                    setWebcam("")
+                    setIsOpen2(false)
+                    setRole("")
+                    getEmployeeStatus()
+                    localStorage.removeItem('log')
+                    window.location.href = "https://ditiosys.com"
+                }
+            } else {
+                console.log(false)
+                setShowToastr2(true)
             }
         } else {
             window.location.href = "https://ditiosys.com/"
@@ -282,6 +297,11 @@ export default function Dashboard() {
                                             Update
                                         </button>
                                     </div>
+                                    {showToastr ? <>
+                                        <div>
+                                            <p className="bg-red-200 mt-5 p-5 rounded-2xl text-red-600 text-center font-medium">IP address does not match</p>
+                                        </div>
+                                    </> : null}
                                 </div>
                             </Transition.Child>
                         </div>
@@ -385,6 +405,11 @@ export default function Dashboard() {
                                             Update
                                         </button>
                                     </div>
+                                    {showToastr2 ? <>
+                                        <div>
+                                            <p className="bg-red-200 mt-5 p-5 rounded-2xl text-red-600 text-center font-medium">IP address does not match</p>
+                                        </div>
+                                    </> : null}
                                 </div>
                             </Transition.Child>
                         </div>
