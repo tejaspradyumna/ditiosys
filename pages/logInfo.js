@@ -9,14 +9,13 @@ import * as credentials from '/config'
 
 export default function LogInfo() {
     const router = useRouter()
-    const id = useState(router.query.id)
-    const eod = useState(router.query.eod)
+    const [id, setId] = useState(router.query.id)
+    const [eod, setEod] = useState(router.query.eod)
     let optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
     const date = useState(new Date(router.query.date).toLocaleString('en-GB', optionsDate))
     const status = useState(router.query.status)
+    const [eodData, setEodData] = useState("")
 
-
-    const eodData = JSON.parse(eod[0])
     const [table, setTable] = useState("")
     // const logDate = date.toLocaleString('en-US', optionsDate)
 
@@ -30,6 +29,7 @@ export default function LogInfo() {
             const data = await res.json()
             console.log(data)
             setTable(data.record)
+            setEodData(JSON.parse(eod[0]))
         }
         getBreakDetails()
     }, [])
