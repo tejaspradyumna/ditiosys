@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 export default function Index() {
 
@@ -6,7 +6,7 @@ export default function Index() {
         window.location.href = 'https://ditiosys.com/'
     }, [])
 
-  return (
-    <></>
-  )
+    return (
+        <></>
+    )
 }
