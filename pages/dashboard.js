@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XCircleIcon } from '@heroicons/react/outline'
 import Webcam from "react-webcam";
 import * as toastr from 'toastr'
+import publicIp from 'public-ip';
 
 import * as credentials from '/config'
 import { Router } from 'next/router';
@@ -95,9 +96,12 @@ export default function Dashboard() {
         const log = localStorage.getItem('log')
         setShowToastr(false)
         if (log) {
-            const ipres = await fetch('https://geolocation-db.com/json/')
-            const ipdata = await ipres.json()
-            const logInIP = ipdata.IPv4
+            // const ipres = await fetch('https://api.db-ip.com/v2/free/self', {
+            //     method: 'GET',
+            // })
+            // const ipdata = await ipres.json()
+            // const logInIP = ipdata.ip
+            const logInIP = await publicIp.v4()
             if (logInIP === '106.51.80.197' || logInIP === '223.233.82.214') {
                 console.log(true)
                 const res = await fetch(`${credentials.API_URL}/api/ditiosys/updateLoginEmployeeStatus`, {
@@ -127,10 +131,10 @@ export default function Dashboard() {
     async function updateLogoutStatus() {
         const log = localStorage.getItem('log')
         if (log) {
-            const ipres = await fetch('https://geolocation-db.com/json/')
-            const ipdata = await ipres.json()
-            const logOutIP = ipdata.IPv4
-
+            // const ipres = await fetch('https://geolocation-db.com/json/')
+            // const ipdata = await ipres.json()
+            // const logOutIP = ipdata.IPv4
+            const logOutIP = await publicIp.v4()
             if (logOutIP === '106.51.80.197' || logOutIP === '223.233.82.214') {
                 const eod = {
                     onboarding,
