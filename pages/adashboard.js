@@ -114,92 +114,98 @@ export default function Dashboard() {
         {
             name: "Total Break Time",
             cell: row => {
-                const [breakData, setBreakData] = useState("")
-                const [breakTime, setBreakTime] = useState("")
-                useEffect(() => {
-                    async function getBreakDetails() {
-                        const id = row.id
-                        const res = await fetch(`${credentials.API_URL}/api/ditiosys/getBreakDetails`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id })
-                        })
-                        const breakData = await res.json()
-                        setBreakData(breakData.record)
-                        let breakTime = 0;
-                        breakData.record.forEach((row1) => {
-                            const time = (new Date(row1.end) - new Date(row1.start)) / 1000
-                            breakTime = breakTime + time
-                            setBreakTime(breakTime)
-                        })
+                const BreakFunction = () => {
+                    const [breakData, setBreakData] = useState("")
+                    const [breakTime, setBreakTime] = useState("")
+                    useEffect(() => {
+                        async function getBreakDetails() {
+                            const id = row.id
+                            const res = await fetch(`${credentials.API_URL}/api/ditiosys/getBreakDetails`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id })
+                            })
+                            const breakData = await res.json()
+                            setBreakData(breakData.record)
+                            let breakTime = 0;
+                            breakData.record.forEach((row1) => {
+                                const time = (new Date(row1.end) - new Date(row1.start)) / 1000
+                                breakTime = breakTime + time
+                                setBreakTime(breakTime)
+                            })
+                        }
+                        getBreakDetails()
+                    }, [])
+                    const h = Math.floor(breakTime / 3600);
+                    const m = Math.floor(breakTime % 3600 / 60);
+                    const s = Math.floor(breakTime % 3600 % 60);
+                    if (h < 10) {
+                        h = "0" + h;
                     }
-                    getBreakDetails()
-                }, [])
-                const h = Math.floor(breakTime / 3600);
-                const m = Math.floor(breakTime % 3600 / 60);
-                const s = Math.floor(breakTime % 3600 % 60);
-                if (h < 10) {
-                    h = "0" + h;
-                }
-                if (m < 10) {
-                    m = "0" + m;
-                }
-                if (s < 10) {
-                    s = "0" + s;
-                }
+                    if (m < 10) {
+                        m = "0" + m;
+                    }
+                    if (s < 10) {
+                        s = "0" + s;
+                    }
 
-                return (
-                    <>
-                        <p>{h} : {m} : {s}</p>
-                    </>
-                )
+                    return (
+                        <>
+                            <p>{h} : {m} : {s}</p>
+                        </>
+                    )
+                }
+                BreakFunction()
             },
             sortable: true,
         },
         {
             name: "Active Time",
             cell: row => {
-                const [breakData, setBreakData] = useState("")
-                const [breakTime, setBreakTime] = useState("")
-                const logTime = (new Date(row.logouttimeStamp) - new Date(row.logintimeStamp)) / 1000
-                const activeTime = logTime - breakTime
-                useEffect(() => {
-                    async function getBreakDetails() {
-                        const id = row.id
-                        const res = await fetch(`${credentials.API_URL}/api/ditiosys/getBreakDetails`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id })
-                        })
-                        const breakData = await res.json()
-                        setBreakData(breakData.record)
-                        let breakTime = 0;
-                        breakData.record.forEach((row1) => {
-                            const time = (new Date(row1.end) - new Date(row1.start)) / 1000
-                            breakTime = breakTime + time
-                            setBreakTime(breakTime)
-                        })
+                const BreakFunction = () => {
+                    const [breakData, setBreakData] = useState("")
+                    const [breakTime, setBreakTime] = useState("")
+                    const logTime = (new Date(row.logouttimeStamp) - new Date(row.logintimeStamp)) / 1000
+                    const activeTime = logTime - breakTime
+                    useEffect(() => {
+                        async function getBreakDetails() {
+                            const id = row.id
+                            const res = await fetch(`${credentials.API_URL}/api/ditiosys/getBreakDetails`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id })
+                            })
+                            const breakData = await res.json()
+                            setBreakData(breakData.record)
+                            let breakTime = 0;
+                            breakData.record.forEach((row1) => {
+                                const time = (new Date(row1.end) - new Date(row1.start)) / 1000
+                                breakTime = breakTime + time
+                                setBreakTime(breakTime)
+                            })
+                        }
+                        getBreakDetails()
+                    }, [])
+                    const h = Math.floor(activeTime / 3600);
+                    const m = Math.floor(activeTime % 3600 / 60);
+                    const s = Math.floor(activeTime % 3600 % 60);
+                    if (h < 10) {
+                        h = "0" + h;
                     }
-                    getBreakDetails()
-                }, [])
-                const h = Math.floor(activeTime / 3600);
-                const m = Math.floor(activeTime % 3600 / 60);
-                const s = Math.floor(activeTime % 3600 % 60);
-                if (h < 10) {
-                    h = "0" + h;
-                }
-                if (m < 10) {
-                    m = "0" + m;
-                }
-                if (s < 10) {
-                    s = "0" + s;
-                }
+                    if (m < 10) {
+                        m = "0" + m;
+                    }
+                    if (s < 10) {
+                        s = "0" + s;
+                    }
 
-                return (
-                    <>
-                        <p>{h} : {m} : {s}</p>
-                    </>
-                )
+                    return (
+                        <>
+                            <p>{h} : {m} : {s}</p>
+                        </>
+                    )
+                }
+                BreakFunction()
             },
             sortable: true,
         },
